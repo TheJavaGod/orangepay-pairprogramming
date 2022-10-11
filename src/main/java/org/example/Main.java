@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,7 +15,16 @@ public class Main {
         File file = new File("records.txt");
         BufferedReader br = new BufferedReader(new FileReader(file));
 
-        List<Person> records = br.lines().map(Person::buildPerson).collect(Collectors.toList());
+        List<Person> records = br.lines().map(s -> {
+            try {
+                return Person.buildPerson(s);
+            } catch (ParseException e) {
+                System.err.println(e.getMessage());
+                return null;
+            }
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
         Map<String, Set<Person>> nameMap = new HashMap<>();
         Map<String, Set<Person>> idNumberMap = new HashMap<>();
